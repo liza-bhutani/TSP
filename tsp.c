@@ -46,7 +46,64 @@ void tspPrim(int start, int limit, int matrix[MAX_CITIES][MAX_CITIES]) {
             }
         }
     }
+// Function to find the shortest path using Dijkstra's algorithm (unchanged)
+void tspDijkstra(int start, int limit, int matrix[MAX_CITIES][MAX_CITIES]) {
+    int dist[MAX_CITIES];    // To store the minimum distance from the starting vertex
+    int visited[MAX_CITIES]; // To track whether a vertex has been visited
+    int parent[MAX_CITIES];  // To store the parent vertices in the shortest path
 
+    // Initialize dist and visited arrays
+    for (int i = 0; i < limit; i++) {
+        dist[i] = INT_MAX;
+        visited[i] = 0; // Initially, no vertices have been visited
+    }
+
+    // The distance from the starting vertex to itself is always 0
+    dist[start] = 0;
+
+    // Initialize the parent of the starting vertex
+    parent[start] = -1;
+
+    // Dijkstra's algorithm
+    for (int count = 0; count < limit - 1; count++) {
+        // Find the vertex with the minimum distance that has not been visited
+        int minDist = INT_MAX;
+        int minIndex = -1;
+
+        for (int v = 0; v < limit; v++) {
+            if (!visited[v] && dist[v] < minDist) {
+                minDist = dist[v];
+                minIndex = v;
+            }
+        }
+
+        // Mark the selected vertex as visited
+        visited[minIndex] = 1;
+
+        // Update distances of adjacent vertices
+        for (int v = 0; v < limit; v++) {
+            if (!visited[v] && matrix[minIndex][v] && dist[minIndex] != INT_MAX && dist[minIndex] + matrix[minIndex][v] < dist[v]) {
+                dist[v] = dist[minIndex] + matrix[minIndex][v];
+                parent[v] = minIndex;
+            }
+        }
+    }
+
+    // Print the shortest path and its cost
+    printf("Shortest Path (Dijkstra's Algorithm) from %c:\n", 'A' + start);
+    for (int i = 0; i < limit; i++) {
+        if (i != start) {
+            printf("Path to %c: ", 'A' + i);
+            int currentNode = i;
+            while (currentNode != start) {
+                printf("%c <- ", 'A' + currentNode);
+                currentNode = parent[currentNode];
+            }
+            printf("%c", 'A' + start);
+            printf("  Cost: %d\n", dist[i]);
+        }
+    }
+}
 void tspKruskal(int start, int limit, int matrix[MAX_CITIES][MAX_CITIES]) {
     struct Edge edges[MAX_CITIES * MAX_CITIES];
     int edgeCount = 0; // Count of edges in the graph
